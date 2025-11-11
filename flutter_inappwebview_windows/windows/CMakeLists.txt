@@ -4,10 +4,10 @@
 # customers of the plugin.
 cmake_minimum_required(VERSION 3.14)
 
-set(WIL_VERSION "1.0.231216.1")
-set(WEBVIEW_VERSION "1.0.2849.39")
-set(NLOHMANN_JSON_VERSION "3.11.2")
-set(CPP_WINRT_VERSION "2.0.240405.15")
+set(WIL_VERSION "1.0.250325.1")
+set(WEBVIEW_VERSION "1.0.3595.46")
+set(NLOHMANN_JSON_VERSION "3.12.0")
+set(CPP_WINRT_VERSION "2.0.250303.1")
 
 message(VERBOSE "CMake system version is ${CMAKE_SYSTEM_VERSION} (using SDK ${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION})")
 
@@ -17,7 +17,7 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
-cmake_policy(VERSION 3.14...3.25)
+cmake_policy(VERSION 3.14...3.30)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
