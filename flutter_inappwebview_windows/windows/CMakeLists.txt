@@ -27,18 +27,21 @@ set(PLUGIN_NAME "flutter_inappwebview_windows_plugin")
 
 find_program(NUGET nuget)
 if(NOT NUGET)
-  message(NOTICE "Nuget is not installed! The flutter_inappwebview_windows plugin requires it. Check https://inappwebview.dev/docs/intro#setup-windows")
+  message(FATAL_ERROR "Nuget is not installed! The flutter_inappwebview_windows plugin requires it. Check https://inappwebview.dev/docs/intro#setup-windows")
 endif()
 
 add_custom_target(${PROJECT_NAME}_DEPS ALL)
-add_custom_command(
-  TARGET ${PROJECT_NAME}_DEPS PRE_BUILD
-  COMMAND ${NUGET} install Microsoft.Windows.ImplementationLibrary -Version ${WIL_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
-  COMMAND ${NUGET} install Microsoft.Windows.CppWinRT -Version ${CPP_WINRT_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
-  COMMAND ${NUGET} install Microsoft.Web.WebView2 -Version ${WEBVIEW_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
-  COMMAND ${NUGET} install nlohmann.json -Version ${NLOHMANN_JSON_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
-  DEPENDS ${NUGET}
-)
+if(NUGET)
+  add_custom_command(
+    TARGET ${PROJECT_NAME}_DEPS PRE_BUILD
+    COMMAND ${NUGET} install Microsoft.Windows.ImplementationLibrary -Version ${WIL_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+    COMMAND ${NUGET} install Microsoft.Windows.CppWinRT -Version ${CPP_WINRT_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+    COMMAND ${NUGET} install Microsoft.Web.WebView2 -Version ${WEBVIEW_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+    COMMAND ${NUGET} install nlohmann.json -Version ${NLOHMANN_JSON_VERSION} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages
+    VERBATIM
+    COMMENT "Downloading NuGet packages for flutter_inappwebview_windows"
+  )
+endif()
 
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
