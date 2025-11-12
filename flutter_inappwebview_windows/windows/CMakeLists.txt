@@ -18,6 +18,8 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.30)
+cmake_policy(SET CMP0175 NEW)
+cmake_policy(SET CMP0087 NEW)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
