@@ -256,3 +256,9 @@ export 'proxy_relay_hop.dart' show ProxyRelayHop;
 export 'show_file_chooser_request_mode.dart' show ShowFileChooserRequestMode;
 export 'show_file_chooser_request.dart' show ShowFileChooserRequest;
 export 'show_file_chooser_response.dart' show ShowFileChooserResponse;
+export 'drm_capability.dart' show DRMCapability, DRMKeySystem;
+export 'media_key_system_configuration.dart'
+    show
+        MediaKeySystemConfiguration,
+        MediaKeySystemMediaCapability,
+        MediaKeysRequirement;

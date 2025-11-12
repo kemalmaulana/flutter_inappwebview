@@ -2624,6 +2624,87 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
         'setSafeBrowsingWhitelist is not implemented on the current platform');
   }
 
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.checkDRMSupport}
+  ///Checks if a specific DRM key system is supported.
+  ///
+  ///The [keySystem] parameter specifies the DRM system identifier to check.
+  ///Examples: 'com.microsoft.playready', 'com.widevine.alpha', 'com.apple.fps'
+  ///
+  ///The [configuration] parameter allows specifying media capabilities and requirements.
+  ///If not provided, a default configuration will be used for basic support detection.
+  ///
+  ///Returns a [DRMCapability] object containing support information, including
+  ///whether the system is supported, security level, and any error messages.
+  ///
+  ///Example:
+  ///```dart
+  ///final playReadySupport = await controller.checkDRMSupport(
+  ///  keySystem: DRMKeySystem.playReady,
+  ///  configuration: MediaKeySystemConfiguration(
+  ///    initDataTypes: ['cenc'],
+  ///    videoCapabilities: [
+  ///      MediaKeySystemMediaCapability(
+  ///        contentType: 'video/mp4; codecs="avc1.42E01E"',
+  ///        robustness: 'SW_SECURE_CRYPTO',
+  ///      ),
+  ///    ],
+  ///  ),
+  ///);
+  ///print('PlayReady supported: ${playReadySupport.isSupported}');
+  ///```
+  ///
+  ///**NOTE**: DRM support depends on the platform and browser engine:
+  ///- **Windows**: WebView2 supports PlayReady natively, but Widevine is not available
+  ///- **Android**: Supports Widevine (most common)
+  ///- **iOS/macOS**: Supports FairPlay Streaming
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView
+  ///- iOS
+  ///- MacOS
+  ///- Windows
+  ///{@endtemplate}
+  Future<DRMCapability> checkDRMSupport({
+    required String keySystem,
+    MediaKeySystemConfiguration? configuration,
+  }) {
+    throw UnimplementedError(
+        'checkDRMSupport is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.checkAllDRMSupport}
+  ///Checks support for multiple DRM key systems.
+  ///
+  ///The [keySystems] parameter is a list of DRM system identifiers to check.
+  ///If not provided, checks all common DRM systems (PlayReady, Widevine, FairPlay).
+  ///
+  ///The [configuration] parameter allows specifying media capabilities and requirements
+  ///that will be used for all DRM systems. If not provided, a default configuration will be used.
+  ///
+  ///Returns a list of [DRMCapability] objects, one for each key system checked.
+  ///
+  ///Example:
+  ///```dart
+  ///final allSupport = await controller.checkAllDRMSupport();
+  ///for (final drm in allSupport) {
+  ///  print('${drm.keySystem}: ${drm.isSupported ? "✅" : "❌"}');
+  ///}
+  ///```
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView
+  ///- iOS
+  ///- MacOS
+  ///- Windows
+  ///{@endtemplate}
+  Future<List<DRMCapability>> checkAllDRMSupport({
+    List<String>? keySystems,
+    MediaKeySystemConfiguration? configuration,
+  }) {
+    throw UnimplementedError(
+        'checkAllDRMSupport is not implemented on the current platform');
+  }
+
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.dispose}
   ///Disposes the controller.
   ///{@endtemplate}

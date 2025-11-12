@@ -2848,6 +2848,112 @@ class WindowsInAppWebViewController extends PlatformInAppWebViewController
   }
 
   @override
+  Future<DRMCapability> checkDRMSupport({
+    required String keySystem,
+    MediaKeySystemConfiguration? configuration,
+  }) async {
+    // Build default configuration if not provided
+    final config = configuration ??
+        MediaKeySystemConfiguration(
+          initDataTypes: const ['cenc', 'keyids'],
+          videoCapabilities: const [
+            MediaKeySystemMediaCapability(
+              contentType: 'video/mp4; codecs="avc1.42E01E"',
+              robustness: 'SW_SECURE_CRYPTO',
+            ),
+          ],
+          audioCapabilities: const [
+            MediaKeySystemMediaCapability(
+              contentType: 'audio/mp4; codecs="mp4a.40.2"',
+              robustness: 'SW_SECURE_CRYPTO',
+            ),
+          ],
+        );
+
+    try {
+      final result = await evaluateJavascript(source: '''
+        (async function() {
+          try {
+            if (!navigator.requestMediaKeySystemAccess) {
+              return {
+                keySystem: '$keySystem',
+                isSupported: false,
+                error: 'EME API not available'
+              };
+            }
+
+            const config = ${jsonEncode(config.toMap())};
+            const keySystemAccess = await navigator.requestMediaKeySystemAccess('$keySystem', [config]);
+            const configuration = keySystemAccess.getConfiguration();
+
+            // Try to determine security level
+            let securityLevel = 'SW_SECURE_CRYPTO';
+            if (configuration.videoCapabilities && configuration.videoCapabilities.length > 0) {
+              securityLevel = configuration.videoCapabilities[0].robustness || 'SW_SECURE_CRYPTO';
+            }
+
+            return {
+              keySystem: '$keySystem',
+              isSupported: true,
+              securityLevel: securityLevel,
+              description: 'DRM system is supported'
+            };
+          } catch (error) {
+            return {
+              keySystem: '$keySystem',
+              isSupported: false,
+              error: error.message || error.toString()
+            };
+          }
+        })();
+      ''');
+
+      if (result is Map) {
+        return DRMCapability.fromMap(Map<String, dynamic>.from(result));
+      }
+
+      return DRMCapability(
+        keySystem: keySystem,
+        isSupported: false,
+        error: 'Unexpected response format',
+      );
+    } catch (e) {
+      return DRMCapability(
+        keySystem: keySystem,
+        isSupported: false,
+        error: 'Exception: $e',
+      );
+    }
+  }
+
+  @override
+  Future<List<DRMCapability>> checkAllDRMSupport({
+    List<String>? keySystems,
+    MediaKeySystemConfiguration? configuration,
+  }) async {
+    final systemsToCheck = keySystems ?? DRMKeySystem.all;
+    final results = <DRMCapability>[];
+
+    for (final keySystem in systemsToCheck) {
+      try {
+        final result = await checkDRMSupport(
+          keySystem: keySystem,
+          configuration: configuration,
+        );
+        results.add(result);
+      } catch (e) {
+        results.add(DRMCapability(
+          keySystem: keySystem,
+          isSupported: false,
+          error: 'Exception: $e',
+        ));
+      }
+    }
+
+    return results;
+  }
+
+  @override
   void dispose({bool isKeepAlive = false}) {
     disposeChannel(removeMethodCallHandler: !isKeepAlive);
     _inAppBrowser = null;
