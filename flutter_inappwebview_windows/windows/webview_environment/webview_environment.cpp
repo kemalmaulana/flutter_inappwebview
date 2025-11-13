@@ -35,7 +35,10 @@ namespace flutter_inappwebview_plugin
     auto options = Make<CoreWebView2EnvironmentOptions>();
     if (settings) {
       if (settings->additionalBrowserArguments.has_value()) {
-        options->put_AdditionalBrowserArguments(utf8_to_wide(settings->additionalBrowserArguments.value()).c_str());
+        options->put_AdditionalBrowserArguments(utf8_to_wide(settings->additionalBrowserArguments.value().append(" --enable-features=HardwareMediaKeyHandling")).c_str());
+      }
+      else {
+        options->put_AdditionalBrowserArguments(L"--enable-features=HardwareMediaKeyHandling");
       }
       if (settings->allowSingleSignOnUsingOSPrimaryAccount.has_value()) {
         options->put_AllowSingleSignOnUsingOSPrimaryAccount(settings->allowSingleSignOnUsingOSPrimaryAccount.value());

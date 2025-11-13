@@ -828,14 +828,19 @@ namespace flutter_inappwebview_plugin
           wil::unique_cotaskmem_string uri;
           std::string url = SUCCEEDED(args->get_Uri(&uri)) ? wide_to_utf8(uri.get()) : "";
 
-          COREWEBVIEW2_PERMISSION_KIND resource = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
-          failedLog(args->get_PermissionKind(&resource));
-
-          auto callback = std::make_unique<WebViewChannelDelegate::PermissionRequestCallback>();
-          auto defaultBehaviour = [this, deferral, args](const std::optional<const std::shared_ptr<PermissionResponse>> permissionResponse)
-            {
-              failedLog(args->put_State(COREWEBVIEW2_PERMISSION_STATE_DENY));
-              failedLog(deferral->Complete());
+                COREWEBVIEW2_PERMISSION_KIND resource = COREWEBVIEW2_PERMISSION_KIND_UNKNOWN_PERMISSION;
+                failedLog(args->get_PermissionKind(&resource));
+          
+                if (resource == COREWEBVIEW2_PERMISSION_KIND_PROTECTED_MEDIA_IDENTIFIER) {
+                  failedLog(args->put_State(COREWEBVIEW2_PERMISSION_STATE_ALLOW));
+                  failedLog(deferral->Complete());
+                  return S_OK;
+                }
+          
+                auto callback = std::make_unique<WebViewChannelDelegate::PermissionRequestCallback>();
+                auto defaultBehaviour = [this, deferral, args](const std::optional<const std::shared_ptr<PermissionResponse>> permissionResponse)
+                  {
+                    failedLog(args->put_State(COREWEBVIEW2_PERMISSION_STATE_DENY));              failedLog(deferral->Complete());
             };
           callback->nonNullSuccess = [this, deferral, args](const std::shared_ptr<PermissionResponse> permissionResponse)
             {
